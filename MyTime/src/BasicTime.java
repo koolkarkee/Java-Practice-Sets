@@ -36,26 +36,28 @@ public class BasicTime {
 	
 	//get String format of BasicTime
 	public String toString(){ 
-		return (this.getHour() + ":" + (String.valueOf(this.getMinute()).length() ==1 ? ("0" + this.getMinute()) : this.getMinute()) + (this.morning ? "AM" : "PM"));
+		return ((String.valueOf(this.getHour()).length() == 1 ? "0" + this.getHour() : this.getHour()) + ":" + (String.valueOf(this.getMinute()).length() ==1 ? ("0" + this.getMinute()) : this.getMinute()) + (this.morning ? "AM" : "PM"));
 	} 
 
 	//add two BasicTime objects, static method
     public static BasicTime addTo(BasicTime a, BasicTime b){
-    	int hour = (a.getMorning() ?  a.getHour() : (a.getHour() % 12)) + (b.getMorning() ? b.getHour() : (b.getHour() % 12));
-    	int min = a.getMinute() + b.getMinute(); 
+    	int hour1 = a.getMorning() ? a.getHour() : (12 + a.getHour()); 
+    	int hour2 = b.getMorning() ? b.getHour() : (12 + b.getHour()); 
     	
-    	if(min >= 60){
-    		hour++; 
-    		min -= 60; 
-    	}
+    	int totalMinute1 = hour1 * 60 + a.getMinute(); 
+    	int totalMinute2 = hour2 * 60 + b.getMinute();  
     	
-    	if(hour >= 24){
-    		hour -= 24; 
-    	}
+    	int totalMinute = totalMinute1 + totalMinute2; 
     	
-    	boolean morning = (hour >= 0 && hour <= 12) ? true : false; 
+    	int min = totalMinute%60; 
+    	int hour = 12 - totalMinute/60; 
+    	
+    	boolean morning = (hour < 0) ? true : false; 
+    	if(hour < 0){
+    		hour *= -1;
+    	} 
     	 
-    	BasicTime result = new BasicTime(hour%12, min, morning); 
+    	BasicTime result = new BasicTime(hour, min, morning); 
     	return result;
     }
     
@@ -66,15 +68,21 @@ public class BasicTime {
     
     //subtract two BasicTime objects, static method
     public static BasicTime subtractTo(BasicTime a, BasicTime b){
-    	int hour = (a.getMorning() ?  a.getHour() : (a.getHour() % 12)) - (b.getMorning() ? b.getHour() : (b.getHour() % 12));
-    	int min = a.getMinute() - b.getMinute(); 
+    	int hour1 = a.getMorning() ? a.getHour() : (12 + a.getHour()); 
+    	int hour2 = b.getMorning() ? b.getHour() : (12 + b.getHour()); 
     	
-    	if(min < 0){
-    		min *= -1; 
-    		hour--;  
+    	int totalMinute1 = hour1 * 60 + a.getMinute(); 
+    	int totalMinute2 = hour2 * 60 + b.getMinute();  
+    	
+    	int totalMinute = totalMinute1 - totalMinute2; 
+    	
+    	int min = totalMinute%60; 
+    	int hour = 12 + totalMinute/60; 
+    	
+    	boolean morning = (hour < 0) ? true : false; 
+    	if(hour < 0){
+    		hour *= -1;
     	} 
-    	
-    	boolean morning = (hour >= 0 && hour <= 12) ? true : false; 
     	 
     	BasicTime result = new BasicTime(hour, min, morning); 
     	return result;

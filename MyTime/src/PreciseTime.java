@@ -49,27 +49,31 @@ public class PreciseTime {
 	
 	//add two PreciseTime objects, static method
     public static PreciseTime addTo(PreciseTime a, PreciseTime b){
-    	int hour = (a.getMorning() ?  a.getHour() : (a.getHour() % 12)) + (b.getMorning() ? b.getHour() : (b.getHour() % 12));
-    	int min = a.getMinute() + b.getMinute(); 
-    	int sec = a.getSeconds() + b.getSeconds(); 
+    	int hour1 = a.getMorning() ? a.getHour() : (12 + a.getHour()); 
+    	int hour2 = b.getMorning() ? b.getHour() : (12 + b.getHour()); 
     	
-    	if(sec >= 60){
-    		min++; 
-    		sec -= 60; 
-    	}
+    	int totalMinute1 = hour1 * 60 + a.getMinute(); 
+    	int totalMinute2 = hour2 * 60 + b.getMinute();  
     	
-    	if(min >= 60){
-    		hour++; 
-    		min -= 60; 
-    	}
-    	
-    	if(hour >= 24){
-    		hour -= 24; 
-    	}
-    	
-    	boolean morning = (hour >= 0 && hour <= 12) ? true : false; 
+    	int totalMinute = totalMinute1 + totalMinute2; 
     	 
-    	PreciseTime result = new PreciseTime(hour%12, min, sec, morning); 
+    	int sec = a.getSeconds() + b.getSeconds(); 
+    	int minCarry = 0;
+    	if(sec >= 60){
+    		minCarry = 1;
+    		sec -= 60; 
+    	} 
+    	totalMinute = totalMinute + minCarry;
+
+    	int min = totalMinute%60; 
+    	int hour = 12 - (totalMinute/60); 
+ 
+    	boolean morning = (hour < 0) ? true : false; 
+    	if(hour < 0){
+    		hour *= -1;
+    	}  
+    	 
+    	PreciseTime result = new PreciseTime(hour, min, sec, morning); 
     	return result;
     }
     
@@ -80,22 +84,30 @@ public class PreciseTime {
     
     //subtract two PreciseTime objects, static method
     public static PreciseTime subtractTo(PreciseTime a, PreciseTime b){
-    	int hour = (a.getMorning() ?  a.getHour() : (a.getHour() % 12)) - (b.getMorning() ? b.getHour() : (b.getHour() % 12));
-    	int min = a.getMinute() - b.getMinute(); 
-    	int sec = a.getSeconds() - b.getSeconds(); 
+    	int hour1 = a.getMorning() ? a.getHour() : (12 + a.getHour()); 
+    	int hour2 = b.getMorning() ? b.getHour() : (12 + b.getHour()); 
     	
-    	if(sec < 0){
-    		sec *= -1; 
-    		min--;
-    	}
+    	int totalMinute1 = hour1 * 60 + a.getMinute(); 
+    	int totalMinute2 = hour2 * 60 + b.getMinute();  
     	
-    	if(min < 0){
-    		min *= -1; 
-    		hour--;  
-    	} 
-    	
-    	boolean morning = (hour >= 0 && hour <= 12) ? true : false; 
+    	int totalMinute = totalMinute1 - totalMinute2; 
     	 
+    	int sec = a.getSeconds() - b.getSeconds(); 
+    	int minCarry = 0;
+    	if(sec < 0){
+    		minCarry = 1;
+    		sec += 60;
+    	} 
+    	totalMinute = totalMinute - minCarry;
+
+    	int min = totalMinute%60; 
+    	int hour = 12 + (totalMinute/60); 
+ 
+    	boolean morning = (hour < 0) ? true : false; 
+    	if(hour < 0){
+    		hour *= -1;
+    	}  
+    	
     	PreciseTime result = new PreciseTime(hour, min, sec, morning); 
     	return result;
     }  
